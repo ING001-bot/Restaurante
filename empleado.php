@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("db.php");
+include("conexion.php");
 
 // Validar que sea Admin
 if (!isset($_SESSION['usuario']) || $_SESSION['cargo'] != 'Admin') {
@@ -11,37 +11,41 @@ if (!isset($_SESSION['usuario']) || $_SESSION['cargo'] != 'Admin') {
 // Crear empleado
 if (isset($_POST['guardar'])) {
     $nombre = $_POST['nombre'];
-    $usuario = $_POST['usuario'];
-    $clave = $_POST['clave'];
+    $apellido = $_POST['apellido'];
     $cargo = $_POST['cargo'];
+    $clave = $_POST['clave'];
+    $telefono = $_POST['telefono'];
+    $estado = 'Activo';
 
-    $sql = "INSERT INTO Empleado (Nombre, Usuario, Clave, Cargo) 
-            VALUES ('$nombre','$usuario','$clave','$cargo')";
+    $sql = "INSERT INTO Empleado (Nombre, Apellido, Cargo, contraseña, Telefono, Estado) 
+            VALUES ('$nombre','$apellido','$cargo','$clave','$telefono','$estado')";
     $conn->query($sql);
-    header("Location: empleados.php");
+    header("Location: empleado.php");
 }
 
 // Eliminar empleado
 if (isset($_GET['eliminar'])) {
     $id = $_GET['eliminar'];
-    $sql = "DELETE FROM Empleado WHERE EmpleadoID=$id";
+    $sql = "DELETE FROM Empleado WHERE IdEmpleado=$id";
     $conn->query($sql);
-    header("Location: empleados.php");
+    header("Location: empleado.php");
 }
 
 // Editar empleado
 if (isset($_POST['editar'])) {
     $id = $_POST['id'];
     $nombre = $_POST['nombre'];
-    $usuario = $_POST['usuario'];
-    $clave = $_POST['clave'];
+    $apellido = $_POST['apellido'];
     $cargo = $_POST['cargo'];
+    $clave = $_POST['clave'];
+    $telefono = $_POST['telefono'];
+    $estado = $_POST['estado'];
 
     $sql = "UPDATE Empleado 
-            SET Nombre='$nombre', Usuario='$usuario', Clave='$clave', Cargo='$cargo' 
-            WHERE EmpleadoID=$id";
+            SET Nombre='$nombre', Apellido='$apellido', Cargo='$cargo', contraseña='$clave', Telefono='$telefono', Estado='$estado' 
+            WHERE IdEmpleado=$id";
     $conn->query($sql);
-    header("Location: empleados.php");
+    header("Location: empleado.php");
 }
 
 // Listado
@@ -67,14 +71,17 @@ $result = $conn->query("SELECT * FROM Empleado");
 
     <!-- Formulario nuevo empleado -->
     <form method="POST" class="row g-3 mb-4">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <input type="text" name="nombre" class="form-control" placeholder="Nombre" required>
         </div>
         <div class="col-md-2">
-            <input type="text" name="usuario" class="form-control" placeholder="Usuario" required>
+            <input type="text" name="apellido" class="form-control" placeholder="Apellido" required>
         </div>
         <div class="col-md-2">
-            <input type="password" name="clave" class="form-control" placeholder="Clave" required>
+            <input type="password" name="clave" class="form-control" placeholder="Contraseña" required>
+        </div>
+        <div class="col-md-2">
+            <input type="text" name="telefono" class="form-control" placeholder="Teléfono" required>
         </div>
         <div class="col-md-2">
             <select name="cargo" class="form-control" required>
@@ -93,22 +100,28 @@ $result = $conn->query("SELECT * FROM Empleado");
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Usuario</th>
+                <th>Apellido</th>
                 <th>Cargo</th>
+                <th>Contraseña</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
         <?php while ($row = $result->fetch_assoc()) { ?>
             <tr>
-                <td><?php echo $row['EmpleadoID']; ?></td>
+                <td><?php echo $row['IdEmpleado']; ?></td>
                 <td><?php echo $row['Nombre']; ?></td>
-                <td><?php echo $row['Usuario']; ?></td>
+                <td><?php echo $row['Apellido']; ?></td>
                 <td><?php echo $row['Cargo']; ?></td>
+                <td><?php echo $row['contraseña']; ?></td>
+                <td><?php echo $row['Telefono']; ?></td>
+                <td><?php echo $row['Estado']; ?></td>
                 <td>
                     <button class="btn btn-warning btn-sm" 
-                        onclick="editar('<?php echo $row['EmpleadoID']; ?>','<?php echo $row['Nombre']; ?>','<?php echo $row['Usuario']; ?>','<?php echo $row['Clave']; ?>','<?php echo $row['Cargo']; ?>')">✏️</button>
-                    <a href="empleados.php?eliminar=<?php echo $row['EmpleadoID']; ?>" class="btn btn-danger btn-sm"
+                        onclick="editar('<?php echo $row['IdEmpleado']; ?>','<?php echo $row['Nombre']; ?>','<?php echo $row['Apellido']; ?>','<?php echo $row['Cargo']; ?>','<?php echo $row['contraseña']; ?>','<?php echo $row['Telefono']; ?>','<?php echo $row['Estado']; ?>')">✏️</button>
+                    <a href="empleado.php?eliminar=<?php echo $row['IdEmpleado']; ?>" class="btn btn-danger btn-sm"
                        onclick="return confirm('¿Eliminar empleado?')">🗑️</a>
                 </td>
             </tr>
@@ -133,12 +146,8 @@ $result = $conn->query("SELECT * FROM Empleado");
                 <input type="text" name="nombre" id="edit_nombre" class="form-control">
             </div>
             <div class="mb-3">
-                <label>Usuario</label>
-                <input type="text" name="usuario" id="edit_usuario" class="form-control">
-            </div>
-            <div class="mb-3">
-                <label>Clave</label>
-                <input type="text" name="clave" id="edit_clave" class="form-control">
+                <label>Apellido</label>
+                <input type="text" name="apellido" id="edit_apellido" class="form-control">
             </div>
             <div class="mb-3">
                 <label>Cargo</label>
@@ -146,6 +155,18 @@ $result = $conn->query("SELECT * FROM Empleado");
                     <option value="Empleado">Empleado</option>
                     <option value="Admin">Admin</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label>Contraseña</label>
+                <input type="text" name="clave" id="edit_clave" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Teléfono</label>
+                <input type="text" name="telefono" id="edit_telefono" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label>Estado</label>
+                <input type="text" name="estado" id="edit_estado" class="form-control">
             </div>
         </div>
         <div class="modal-footer">
@@ -158,12 +179,14 @@ $result = $conn->query("SELECT * FROM Empleado");
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function editar(id,nombre,usuario,clave,cargo){
+function editar(id,nombre,apellido,cargo,clave,telefono,estado){
     document.getElementById("edit_id").value = id;
     document.getElementById("edit_nombre").value = nombre;
-    document.getElementById("edit_usuario").value = usuario;
-    document.getElementById("edit_clave").value = clave;
+    document.getElementById("edit_apellido").value = apellido;
     document.getElementById("edit_cargo").value = cargo;
+    document.getElementById("edit_clave").value = clave;
+    document.getElementById("edit_telefono").value = telefono;
+    document.getElementById("edit_estado").value = estado;
     var modal = new bootstrap.Modal(document.getElementById("modalEditar"));
     modal.show();
 }

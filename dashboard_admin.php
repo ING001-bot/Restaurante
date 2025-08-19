@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario']) || $_SESSION['cargo'] != 'Admin') {
+if (!isset($_SESSION['usuario']) || !in_array($_SESSION['cargo'], ['Admin', 'Empleado'])) {
     header("Location: login.php");
     exit();
 }
@@ -24,16 +24,17 @@ if (!isset($_SESSION['usuario']) || $_SESSION['cargo'] != 'Admin') {
 
     <div class="row mt-4">
         <div class="col-md-3">
-            <a href="clientes.php" class="btn btn-outline-primary w-100 mb-2">Clientes</a>
-            <a href="empleados.php" class="btn btn-outline-primary w-100 mb-2">Empleados</a>
-            <a href="productos.php" class="btn btn-outline-primary w-100 mb-2">Productos</a>
-            <a href="mesas.php" class="btn btn-outline-primary w-100 mb-2">Mesas</a>
+            <a href="cliente.php" class="btn btn-outline-primary w-100 mb-2">Clientes</a>
+            <a href="empleado.php" class="btn btn-outline-primary w-100 mb-2">Empleados</a>
+            <a href="producto.php" class="btn btn-outline-primary w-100 mb-2">Productos</a>
+            <a href="mesa.php" class="btn btn-outline-primary w-100 mb-2">Mesas</a>
+            <a href="estado_producto.php" class="btn btn-outline-warning w-100 mb-2">Cambiar Estado Producto</a>
         </div>
         <div class="col-md-3">
-            <a href="pedidos.php" class="btn btn-outline-success w-100 mb-2">Pedidos</a>
-            <a href="pagos.php" class="btn btn-outline-success w-100 mb-2">Pagos</a>
-            <a href="facturas.php" class="btn btn-outline-success w-100 mb-2">Facturas</a>
-            <a href="boletas.php" class="btn btn-outline-success w-100 mb-2">Boletas</a>
+            <a href="pedido.php" class="btn btn-outline-success w-100 mb-2">Pedidos</a>
+            <a href="pago.php" class="btn btn-outline-success w-100 mb-2">Pagos</a>
+            <a href="factura.php" class="btn btn-outline-success w-100 mb-2">Facturas</a>
+            <a href="boleta.php" class="btn btn-outline-success w-100 mb-2">Boletas</a>
         </div>
     </div>
 </div>

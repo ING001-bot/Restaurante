@@ -20,6 +20,12 @@ $detalles = $conn->query("SELECT d.Cantidad, d.PrecioUnitario, pl.Nombre
                           FROM DetallesPedido d 
                           JOIN Platos pl ON d.PlatoID=pl.PlatoID
                           WHERE d.PedidoID=$id");
+
+$clientes_result = $conn->query("SELECT * FROM Cliente");
+$clientes_array = [];
+while($c = $clientes_result->fetch_assoc()) {
+    $clientes_array[] = $c;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -68,5 +74,12 @@ $detalles = $conn->query("SELECT d.Cantidad, d.PrecioUnitario, pl.Nombre
   </table>
 
   <a href="pedidos.php" class="btn btn-secondary">⬅️ Volver</a>
+
+  <h4>Clientes</h4>
+  <select class="form-select">
+    <?php foreach($clientes_array as $c) { ?>
+        <option value="<?php echo $c['IdCliente']; ?>"><?php echo $c['Nombre']." ".$c['Apellido']; ?></option>
+    <?php } ?>
+  </select>
 </body>
 </html>
